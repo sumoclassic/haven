@@ -1,5 +1,5 @@
-# Haven
-
+# Sumoclassic
+Copyright (c) 2018-2019 SumoClassic
 Copyright (c) 2017-2018 Haven Protocol
 
 Copyright (c) 2014-2017 The Monero Project.   
@@ -7,45 +7,45 @@ Portions Copyright (c) 2012-2013 The Cryptonote developers.
 
 ## Resources
 
-- Web: [havenprotocol.com](https://havenprotocol.com)
-- Reddit: [/r/havenprotocol](https://www.reddit.com/r/havenprotocol/)
-- GitHub: [https://github.com/havenprotocol/haven](https://github.com/havenprotocol/haven)
+- Web: [sumoclassic.org](https://sumoclassic.org)
+- Reddit: [/r/sumoclassic](https://www.reddit.com/r/sumoclassic/)
+- GitHub: [https://github.com/sumoclassic/sumoclassic](https://github.com/sumoclassic/sumoclassic)
 
 
 ## Introduction
 
-Haven is an experimental cryptocurrency that proposes a new way of achieving a stable fiat value storage while still having free reign to be traded at market value.
+SumoClassic is an experimental cryptocurrency that proposes a new way of achieving a stable fiat value storage while still having free reign to be traded at market value.
 
 
 
-**Privacy:** Haven uses a cryptographically sound system to allow you to send and receive funds without your transactions being easily revealed on the blockchain (the ledger of transactions that everyone has). This ensures that your purchases, receipts, and all transfers remain absolutely private by default.
+**Privacy:** SumoClassic uses a cryptographically sound system to allow you to send and receive funds without your transactions being easily revealed on the blockchain (the ledger of transactions that everyone has). This ensures that your purchases, receipts, and all transfers remain absolutely private by default.
 
 **Security:** Using the power of a distributed peer-to-peer consensus network, every transaction on the network is cryptographically secured. Individual wallets have a 25 word mnemonic seed that is only displayed once, and can be written down to backup the wallet. Wallet files are encrypted with a passphrase to ensure they are useless if stolen.
 
-**Untraceability:** By taking advantage of ring signatures, a special property of a certain type of cryptography, Haven is able to ensure that transactions are not only untraceable, but have an optional measure of ambiguity that ensures that transactions cannot easily be tied back to an individual user or computer.
+**Untraceability:** By taking advantage of ring signatures, a special property of a certain type of cryptography, SumoClassic is able to ensure that transactions are not only untraceable, but have an optional measure of ambiguity that ensures that transactions cannot easily be tied back to an individual user or computer.
 
 
 ## Coin Supply & Emission
 
-- Total supply: 18,400,000 coins before tail emission and the coins that are minted and burned via offshore storage.
-- Coin symbol: XHV
+- Total supply: 52,500,000 coins before tail emission and the coins that are minted and burned via offshore storage.
+- Coin symbol: SUMC
 - Coin Units:
-  - 1 picohaven/havnoshi = 0.000000000001 XHV (10^-12 -smallest unit)
-  - 1 nanohaven = 0.000000001 XHV (10^-9)
-  - 1 microhaven = 0.000001 XHV (10^-6)
-  - 1 millihaven = 0.001 XHV (10^-3)
+  - 1 sumoshi = 0.000000000001 SUMC (10^-12 -smallest unit)
+  - 1 nanosumoshi = 0.000000001 SUMC (10^-9)
+  - 1 microsumoshi = 0.000001 SUMC (10^-6)
+  - 1 millisumoshi = 0.001 SUMC (10^-3)
 - Hash algorithm: CryptoNight (Proof-Of-Work)
 
 
 ## About this project
 
-This is the core implementation of Haven. It is open source and completely free to use without restrictions, except for those specified in the license agreement below. There are no restrictions on anyone creating an alternative implementation of Haven that uses the protocol and network in a compatible manner.
+This is the core implementation of SumoClassic. It is open source and completely free to use without restrictions, except for those specified in the license agreement below. There are no restrictions on anyone creating an alternative implementation of SumoClassic that uses the protocol and network in a compatible manner.
 
 ## License
 
 See [LICENSE](LICENSE).
 
-## Compiling Haven from source
+## Compiling SumoClassic from source
 
 ### Dependencies
 
@@ -86,7 +86,7 @@ build the library binary manually. This can be done with the following command `
 
 ### Build instructions
 
-Haven uses the CMake build system and a top-level [Makefile](Makefile) that
+SumoClassic uses the CMake build system and a top-level [Makefile](Makefile) that
 invokes cmake commands as needed.
 
 #### On Linux and OS X
@@ -94,7 +94,7 @@ invokes cmake commands as needed.
 * Install the dependencies
 * Change to the root of the source code directory and build:
 
-        cd haven
+        cd sumoclassic
         make
 
     *Optional*: If your machine has several cores and enough memory, enable
@@ -107,9 +107,9 @@ invokes cmake commands as needed.
 
 * The resulting executables can be found in `build/release/bin`
 
-* Add `PATH="$PATH:$HOME/haven/build/release/bin"` to `.profile`
+* Add `PATH="$PATH:$HOME/sumoclassic/build/release/bin"` to `.profile`
 
-* Run Haven with `havend --detach`
+* Run SumoClassic with `sumoclassicd --detach`
 
 * **Optional**: build and run the test suite to verify the binaries:
 
@@ -135,7 +135,7 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 
 * `apt-get update && apt-get upgrade` to install all of the latest software
 
-* Install the dependencies for Haven from the 'Debian' column in the table above.
+* Install the dependencies for SumoClassic from the 'Debian' column in the table above.
 
 * Increase the system swap size:
 ```
@@ -144,11 +144,11 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 	CONF_SWAPSIZE=1024  
 	sudo /etc/init.d/dphys-swapfile start  
 ```
-* Clone haven and checkout most recent release version:
+* Clone sumoclassic and checkout most recent release version:
 ```
-        git clone https://github.com/havenprotocol/haven.git
-	cd haven
-	git checkout tags/v0.11.0.0
+        git clone https://github.com/sumoclassic/sumoclassic.git
+	cd sumoclassic
+	git checkout tags/v0.11.0.0  //UPDATE TO SUMOCLASSIC TAG
 ```
 * Build:
 ```
@@ -158,9 +158,9 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 
 * The resulting executables can be found in `build/release/bin`
 
-* Add `PATH="$PATH:$HOME/haven/build/release/bin"` to `.profile`
+* Add `PATH="$PATH:$HOME/sumoclassicd/build/release/bin"` to `.profile`
 
-* Run Haven with `havend --detach`
+* Run SumoClassic with `sumoclassicd --detach`
 
 * You may wish to reduce the size of the swap file after the build has finished, and delete the boost directory from your home directory
 
@@ -334,7 +334,7 @@ cmake ..
 doas make install
 ```
 
-Build haven: `env DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/usr/local make release-static`
+Build SumoClassic: `env DEVELOPER_LOCAL_TOOLS=1 BOOST_ROOT=/usr/local make release-static`
 
 ### On Solaris:
 
@@ -350,11 +350,11 @@ Then you can run make as usual.
 ### On Linux for Android (using docker):
 
         # Build image (select android64.Dockerfile for aarch64)
-        cd utils/build_scripts/ && docker build -f android32.Dockerfile -t haven-android .
+        cd utils/build_scripts/ && docker build -f android32.Dockerfile -t sumoclassic-android .
         # Create container
-        docker create -it --name haven-android haven-android bash
+        docker create -it --name sumoclassic-android sumoclassic-android bash
         # Get binaries
-        docker cp haven-android:/opt/android/haven/build/release/bin .
+        docker cp sumoclassic-android:/opt/android/sumoclassic/build/release/bin .
 
 ### Building portable statically linked binaries
 
@@ -368,15 +368,15 @@ By default, in either dynamically or statically linked builds, binaries target t
 * ```make release-static-win64``` builds binaries on 64-bit Windows portable across 64-bit Windows systems
 * ```make release-static-win32``` builds binaries on 64-bit or 32-bit Windows portable across 32-bit Windows systems
 
-## Running havend
+## Running sumoclassicd
 
 The build places the binary in `bin/` sub-directory within the build directory
 from which cmake was invoked (repository root by default). To run in
 foreground:
 
-    ./bin/havend
+    ./bin/sumoclassicd
 
-To list all available options, run `./bin/havend --help`.  Options can be
+To list all available options, run `./bin/sumoclassicd --help`.  Options can be
 specified either on the command line or in a configuration file passed by the
 `--config-file` argument.  To specify an option in the configuration file, add
 a line with the syntax `argumentname=value`, where `argumentname` is the name
@@ -384,17 +384,17 @@ of the argument without the leading dashes, for example `log-level=1`.
 
 To run in background:
 
-    ./bin/havend --log-file havend.log --detach
+    ./bin/sumoclassicd --log-file sumoclassicd.log --detach
 
 To run as a systemd service, copy
-[havend.service](utils/systemd/havend.service) to `/etc/systemd/system/` and
-[havend.conf](utils/conf/havend.conf) to `/etc/`. The [example
-service](utils/systemd/havend.service) assumes that the user `haven` exists
+[sumoclassicd.service](utils/systemd/sumoclassicd.service) to `/etc/systemd/system/` and
+[sumoclassicd.conf](utils/conf/sumoclassicd.conf) to `/etc/`. The [example
+service](utils/systemd/sumoclassicd.service) assumes that the user `sumoclassic` exists
 and its home is the data directory specified in the [example
-config](utils/conf/havend.conf).
+config](utils/conf/sumoclassicd.conf).
 
 If you're on Mac, you may need to add the `--max-concurrency 1` option to
-haven-wallet-cli, and possibly havend, if you get crashes refreshing.
+sumoclassic-wallet-cli, and possibly sumoclassicd, if you get crashes refreshing.
 
 ## Internationalization
 
@@ -403,7 +403,7 @@ See [README.i18n.md](README.i18n.md).
 
 ## Debugging
 
-This section contains general instructions for debugging failed installs or problems encountered with Haven. First ensure you are running the latest version built from the Github repo.
+This section contains general instructions for debugging failed installs or problems encountered with SumoClassic. First ensure you are running the latest version built from the Github repo.
 
 ### Obtaining stack traces and core dumps on Unix systems
 
@@ -416,7 +416,7 @@ Run the build.
 Once it stalls, enter the following command:
 
 ```
-gdb /path/to/havend `pidof havend`
+gdb /path/to/sumoclassicd `pidof sumoclassicd`
 ```
 
 Type `thread apply all bt` within gdb in order to obtain the stack trace
@@ -429,27 +429,27 @@ Enter `echo core | sudo tee /proc/sys/kernel/core_pattern` to stop cores from be
 
 Run the build.
 
-When it terminates with an output along the lines of "Segmentation fault (core dumped)", there should be a core dump file in the same directory as havend. It may be named just `core`, or `core.xxxx` with numbers appended.
+When it terminates with an output along the lines of "Segmentation fault (core dumped)", there should be a core dump file in the same directory as sumoclassicd. It may be named just `core`, or `core.xxxx` with numbers appended.
 
 You can now analyse this core dump with `gdb` as follows:
 
-`gdb /path/to/havend /path/to/dumpfile`
+`gdb /path/to/sumoclassicd /path/to/dumpfile`
 
 Print the stack trace with `bt`
 
-* To run haven within gdb:
+* To run sumoclassic within gdb:
 
-Type `gdb /path/to/havend`
+Type `gdb /path/to/sumoclassicd`
 
 Pass command-line options with `--args` followed by the relevant arguments
 
-Type `run` to run havend
+Type `run` to run sumoclassicd
 
 ### Analysing memory corruption
 
 We use the tool `valgrind` for this.
 
-Run with `valgrind /path/to/havend`. It will be slow.
+Run with `valgrind /path/to/sumoclassicd`. It will be slow.
 
 ### LMDB
 
@@ -457,7 +457,7 @@ Instructions for debugging suspected blockchain corruption as per @HYC
 
 There is an `mdb_stat` command in the LMDB source that can print statistics about the database but it's not routinely built. This can be built with the following command:
 
-`cd ~/haven/external/db_drivers/liblmdb && make`
+`cd ~/sumoclassic/external/db_drivers/liblmdb && make`
 
 The output of `mdb_stat -ea <path to blockchain dir>` will indicate inconsistencies in the blocks, block_heights and block_info table.
 

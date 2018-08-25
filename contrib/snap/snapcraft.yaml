@@ -23,9 +23,9 @@ apps:
             - home
             - network
             - network-bind
-    haven-wallet-cli:
+    sumoclassic-wallet-cli:
         command: |
-          haven-wallet-cli --log-file ${SNAP_USER_DATA}
+          sumoclassic-wallet-cli --log-file ${SNAP_USER_DATA}
         plugs:
             - home
             - network

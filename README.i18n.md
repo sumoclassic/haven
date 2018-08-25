@@ -1,9 +1,9 @@
-Haven daemon internationalization
+SumoClassic daemon internationalization
 ==================================
 
-The Haven command line tools can be translated in various languages.
+The SumoClassic command line tools can be translated in various languages.
 
-In order to use the same translation workflow as the [Haven Core GUI](https://github.com/havenprotocol/haven-gui), they use Qt Linguist translation files.  However, to avoid the dependencies on Qt this normally implies, they use a custom loader to read those files at runtime.
+In order to use the same translation workflow as the [SumoClassic Core GUI](https://github.com/sumoclassic/sumoclassic-gui), they use Qt Linguist translation files.  However, to avoid the dependencies on Qt this normally implies, they use a custom loader to read those files at runtime.
 
 ### Tools for translators
 
@@ -19,11 +19,11 @@ To update ts files after changing source code:
 
 To add a new language, eg Spanish (ISO code es):
 
-    cp translations/haven.ts translations/haven_es.ts
+    cp translations/sumoclassic.ts translations/sumoclassic_es.ts
 
 To edit translations for Spanish:
 
-    linguist translations/haven_es.ts
+    linguist translations/sumoclassic_es.ts
 
 To build translations after modifying them:
 
@@ -31,7 +31,7 @@ To build translations after modifying them:
 
 To test a translation:
 
-    LANG=es ./build/release/bin/haven-wallet-cli
+    LANG=es ./build/release/bin/sumoclassic-wallet-cli
 
 To add new translatable strings in the source code:
 
