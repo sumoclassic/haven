@@ -177,5 +177,4 @@ namespace config
     uint32_t const GENESIS_NONCE = 10001;
     std::string const GOVERNANCE_WALLET_ADDRESS = "hvtaNJ3NX37g5H1cNS77CoRWgLTSkPciY8t2VDYcKkXkAsdjMtmKBJiLA4cfwn4t2tNUv74p7C6fb7Ti2Yu3azRNAD4BK7BMpt";
   }
- }
 }
