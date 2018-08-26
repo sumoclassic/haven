@@ -160,7 +160,7 @@ namespace config
   std::string const GENESIS_TX = "023c01ff0001808098d0daf1d00f028be379aa57a70fa19c0ee5765fdc3d2aae0b1034158f4963e157d9042c24fbec21013402fc7071230f1f86f33099119105a7b1f64a898526060ab871e685059c223100";
   uint32_t const GENESIS_NONCE = 10000;
 
-
+  std::string const GOVERNANCE_WALLET_ADDRESS = "hvxy7YfeE8SdTrCmSqLB59WoQn3ZQun1aLX36X3eb1R7Fb26VuNpc235q4fguGUxfGKerywFPnweu15S8RB8DzTJ8Q4hGJCgvv";
 
   namespace testnet
   {
@@ -175,5 +175,7 @@ namespace config
       } }; // Bender's daydream
     std::string const GENESIS_TX = "023c01ff0001808098d0daf1d00f028d7bbb5a23ab085e05230bd45d938c71f669f94c2a170b96b64827b7bc2cbde521012b6ed837a56ef72f57b4e46410bdea82e382c43ae8797a0f3e8419b5d4f8e6fe00";
     uint32_t const GENESIS_NONCE = 10001;
+    std::string const GOVERNANCE_WALLET_ADDRESS = "hvtaNJ3NX37g5H1cNS77CoRWgLTSkPciY8t2VDYcKkXkAsdjMtmKBJiLA4cfwn4t2tNUv74p7C6fb7Ti2Yu3azRNAD4BK7BMpt";
   }
+ }
 }
