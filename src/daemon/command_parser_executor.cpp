@@ -631,7 +631,7 @@ bool t_command_parser_executor::sync_info(const std::vector<std::string>& args)
 
 bool t_command_parser_executor::version(const std::vector<std::string>& args)
 {
-  std::cout << "Haven '" << HAVEN_RELEASE_NAME << "' (v" << HAVEN_VERSION_FULL << ")" << std::endl;
+  std::cout << "SumoClassic '" << SUMOCLASSIC_RELEASE_NAME << "' (v" << SUMOCLASSIC_VERSION_FULL << ")" << std::endl;
   return true;
 }
 

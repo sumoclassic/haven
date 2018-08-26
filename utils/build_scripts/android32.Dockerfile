@@ -82,8 +82,8 @@ RUN git clone https://github.com/zeromq/zeromq4-1.git \
 
 RUN ln -s /opt/android/openssl/libcrypto.a /opt/android/openssl/libssl.a ${TOOLCHAIN_DIR}/arm-linux-androideabi/lib/armv7-a
 
-RUN git clone https://github.com/havenprotocol/haven.git \
-    && cd haven \
+RUN git clone https://github.com/sumoclassic/sumoclassic.git \
+    && cd sumoclassic \
     && mkdir -p build/release \
     && CC=clang CXX=clang++ \
          BOOST_ROOT=${WORKDIR}/boost_${BOOST_VERSION} BOOST_LIBRARYDIR=${WORKDIR}/boost_${BOOST_VERSION}/android32/lib/ \

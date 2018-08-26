@@ -166,7 +166,7 @@ Tested on a Raspberry Pi Zero with a clean install of minimal Raspbian Stretch (
 
 #### *Note for Raspbian Jessie users:*
 
-If you are using the older Raspbian Jessie image, compiling Haven is a bit more complicated. The version of Boost available in the Debian Jessie repositories is too old to use with Haven, and thus you must compile a newer version yourself. The following explains the extra steps, and has been tested on a Raspberry Pi 2 with a clean install of minimal Raspbian Jessie.
+If you are using the older Raspbian Jessie image, compiling SumoClassic is a bit more complicated. The version of Boost available in the Debian Jessie repositories is too old to use with SumoClassic, and thus you must compile a newer version yourself. The following explains the extra steps, and has been tested on a Raspberry Pi 2 with a clean install of minimal Raspbian Jessie.
 
 * As before, `apt-get update && apt-get upgrade` to install all of the latest software, and increase the system swap size
 
@@ -177,7 +177,7 @@ If you are using the older Raspbian Jessie image, compiling Haven is a bit more 
 	sudo /etc/init.d/dphys-swapfile start  
 ```
 
-* Then, install the dependencies for Haven except `libunwind` and `libboost-all-dev`
+* Then, install the dependencies for SumoClassic except `libunwind` and `libboost-all-dev`
 
 * Install the latest version of boost (this may first require invoking `apt-get remove --purge libboost*` to remove a previous version if you're not using a clean install):
 ```
@@ -194,7 +194,7 @@ If you are using the older Raspbian Jessie image, compiling Haven is a bit more 
 ```
 * Wait ~4 hours
 
-* From here, follow the [general Raspberry Pi instructions](#on-the-raspberry-pi) from the "Clone haven and checkout most recent release version" step.
+* From here, follow the [general Raspberry Pi instructions](#on-the-raspberry-pi) from the "Clone SumoClassic and checkout most recent release version" step.
 
 #### On Windows:
 
@@ -247,9 +247,9 @@ application.
 
 ### On FreeBSD:
 
-The project can be built from scratch by following instructions for Linux above. If you are running haven in a jail you need to add the flag: `allow.sysvipc=1` to your jail configuration, otherwise lmdb will throw the error message: `Failed to open lmdb environment: Function not implemented`.
+The project can be built from scratch by following instructions for Linux above. If you are running SumoClassic in a jail you need to add the flag: `allow.sysvipc=1` to your jail configuration, otherwise lmdb will throw the error message: `Failed to open lmdb environment: Function not implemented`.
 
-We expect to add Haven into the ports tree in the near future, which will aid in managing installations using ports or packages.
+We expect to add SumoClassic into the ports tree in the near future, which will aid in managing installations using ports or packages.
 
 ### On OpenBSD:
 

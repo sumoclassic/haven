@@ -1471,8 +1471,8 @@ Avviso: alcune chiavi di input spese vengono da </translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="806"/>
-        <source>haven, millihaven, microhaven, nanohaven, picohaven</source>
-        <translation>haven, millihaven, microhaven, nanohaven, picohaven</translation>
+        <source>haven, millisumoshi, microsumoshi, nanosumoshi, picosumoshi</source>
+        <translation>sumoshi, millisumoshi, microsumoshi, nanosumoshi, picosumoshi</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="851"/>
@@ -1622,14 +1622,14 @@ Avviso: alcune chiavi di input spese vengono da </translation>
         <source>Your wallet has been generated!
 To start synchronizing with the daemon, use the &quot;refresh&quot; command.
 Use the &quot;help&quot; command to see the list of available commands.
-Always use the &quot;exit&quot; command when closing haven-wallet-cli to save
+Always use the &quot;exit&quot; command when closing sumoclassic-wallet-cli to save
 your current session&apos;s state. Otherwise, you might need to synchronize
 your wallet again (your wallet keys are NOT at risk in any case).
 </source>
         <translation>Il tuo portafoglio è stato generato!
 Per iniziare a sincronizzarlo con il daemon, usa il comando &quot;refresh&quot;.
 Usa il comando &quot;help&quot; per vedere la lista dei comandi disponibili.
-Usa sempre il comando &quot;exit&quot; quando chiudi haven-wallet-cli per salvare
+Usa sempre il comando &quot;exit&quot; quando chiudi sumoclassic-wallet-cli per salvare
 lo stato della tua sessione &apos;s corrente. Altrimenti potresti dover sincronizzare
 di nuovo il tuo portafoglio (le chiavi del tuo portafoglio NON sono a rischio in sessun caso).</translation>
     </message>
@@ -2444,8 +2444,8 @@ Outputs per *: </source>
     </message>
     <message>
         <location filename="../src/common/dns_utils.cpp" line="439"/>
-        <source> Haven Address = </source>
-        <translation> Indirizzo Haven = </translation>
+        <source> SumoClassic Address = </source>
+        <translation> Indirizzo SumoClassic = </translation>
     </message>
     <message>
         <location filename="../src/common/dns_utils.cpp" line="441"/>

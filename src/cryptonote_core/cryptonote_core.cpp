@@ -1437,7 +1437,7 @@ namespace cryptonote
     if (!tools::check_updates(software, buildtag, version, hash))
       return false;
 
-    if (tools::vercmp(version.c_str(), HAVEN_VERSION) <= 0)
+    if (tools::vercmp(version.c_str(), SUMOCLASSIC_VERSION) <= 0)
       return true;
 
     std::string url = tools::get_update_url(software, subdir, buildtag, version, true);

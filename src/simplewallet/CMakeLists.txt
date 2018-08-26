@@ -60,5 +60,5 @@ target_link_libraries(simplewallet
     ${EXTRA_LIBRARIES})
 set_property(TARGET simplewallet
   PROPERTY
-    OUTPUT_NAME "haven-wallet-cli")
+    OUTPUT_NAME "sumoclassic-wallet-cli")
 install(TARGETS simplewallet DESTINATION bin)

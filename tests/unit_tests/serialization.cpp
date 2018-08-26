@@ -788,7 +788,7 @@ TEST(Serialization, portability_wallet)
   }
 }
 
-#define OUTPUT_EXPORT_FILE_MAGIC "Haven output export\003"
+#define OUTPUT_EXPORT_FILE_MAGIC "SumoClassic output export\003"
 TEST(Serialization, portability_outputs)
 {
   // read file

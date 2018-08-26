@@ -87,7 +87,7 @@ typedef cryptonote::simple_wallet sw;
 
 #define MIN_RING_SIZE 10 // Used to inform user about min ring size -- does not track actual protocol
 
-#define OUTPUT_EXPORT_FILE_MAGIC "Haven output export\003"
+#define OUTPUT_EXPORT_FILE_MAGIC "SumoClassic output export\003"
 
 #define LOCK_IDLE_SCOPE() \
   bool auto_refresh_enabled = m_auto_refresh_enabled.load(std::memory_order_relaxed); \
@@ -129,7 +129,7 @@ namespace
   const command_line::arg_descriptor<bool> arg_trusted_daemon = {"trusted-daemon", sw::tr("Enable commands which rely on a trusted daemon"), false};
   const command_line::arg_descriptor<bool> arg_allow_mismatched_daemon_version = {"allow-mismatched-daemon-version", sw::tr("Allow communicating with a daemon that uses a different RPC version"), false};
   const command_line::arg_descriptor<uint64_t> arg_restore_height = {"restore-height", sw::tr("Restore from specific blockchain height"), 0};
-  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the haven network"), false};
+  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the SumoClassic network"), false};
 
   const command_line::arg_descriptor< std::vector<std::string> > arg_command = {"command", ""};
 
@@ -304,7 +304,7 @@ namespace
     std::stringstream prompt;
     prompt << tr("For URL: ") << url
            << ", " << dnssec_str << std::endl
-           << tr(" Haven Address = ") << addresses[0]
+           << tr(" SumoClassic Address = ") << addresses[0]
            << std::endl
            << tr("Is this OK? (Y/n) ")
     ;
@@ -665,7 +665,7 @@ bool simple_wallet::print_fee_info(const std::vector<std::string> &args/* = std:
   }
   const uint64_t per_kb_fee = m_wallet->get_per_kb_fee();
   const uint64_t typical_size_kb = 13;
-  message_writer() << (boost::format(tr("Current fee is %s haven per kB")) % print_money(per_kb_fee)).str();
+  message_writer() << (boost::format(tr("Current fee is %s SUMC per kB")) % print_money(per_kb_fee)).str();
 
   std::vector<uint64_t> fees;
   for (uint32_t priority = 1; priority <= 4; ++priority)
@@ -1148,7 +1148,7 @@ bool simple_wallet::export_raw_multisig(const std::vector<std::string> &args)
     for (auto &ptx: txs.m_ptx)
     {
       const crypto::hash txid = cryptonote::get_transaction_hash(ptx.tx);
-      const std::string filename = std::string("raw_multisig_haven_tx_") + epee::string_tools::pod_to_hex(txid);
+      const std::string filename = std::string("raw_multisig_sumoclassic_tx_") + epee::string_tools::pod_to_hex(txid);
       if (!filenames.empty())
         filenames += ", ";
       filenames += filename;
@@ -1176,7 +1176,7 @@ bool simple_wallet::export_raw_multisig(const std::vector<std::string> &args)
 
 bool simple_wallet::version(const std::vector<std::string> &args)
 {
-  message_writer() << "Haven '" << HAVEN_RELEASE_NAME << "' (v" << HAVEN_VERSION_FULL << ")";
+  message_writer() << "SumoClassic '" << SUMOCLASSIC_RELEASE_NAME << "' (v" << SUMOCLASSIC_VERSION_FULL << ")";
   return true;
 }
 
@@ -1376,15 +1376,15 @@ bool simple_wallet::set_unit(const std::vector<std::string> &args/* = std::vecto
   const std::string &unit = args[1];
   unsigned int decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
 
-  if (unit == "haven")
+  if (unit == "sumoshi")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT;
-  else if (unit == "millihaven")
+  else if (unit == "millisumoshi")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 3;
-  else if (unit == "microhaven")
+  else if (unit == "microsumoshi")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 6;
-  else if (unit == "nanohaven")
+  else if (unit == "nanosumoshi")
     decimal_point = CRYPTONOTE_DISPLAY_DECIMAL_POINT - 9;
-  else if (unit == "picohaven")
+  else if (unit == "picosumoshi")
     decimal_point = 0;
   else
   {
@@ -1654,8 +1654,8 @@ simple_wallet::simple_wallet()
                                   "  Set the fee too default/unimportant/normal/elevated/priority.\n "
                                   "confirm-missing-payment-id <1|0>\n "
                                   "ask-password <1|0>\n "
-                                  "unit <haven|millihaven|microhaven|nanohaven|picohaven>\n "
-                                  "  Set the default haven (sub-)unit.\n "
+                                  "unit <sumoshi|millisumoshi|microsumoshi|nanosumoshi|picosumoshi>\n "
+                                  "  Set the default sumoshi (sub-)unit.\n "
                                   "min-outputs-count [n]\n "
                                   "  Try to keep at least that many outputs of value at least min-outputs-value.\n "
                                   "min-outputs-value [n]\n "
@@ -1868,7 +1868,7 @@ bool simple_wallet::set_variable(const std::vector<std::string> &args)
     CHECK_SIMPLE_VARIABLE("priority", set_default_priority, tr("0, 1, 2, 3, or 4"));
     CHECK_SIMPLE_VARIABLE("confirm-missing-payment-id", set_confirm_missing_payment_id, tr("0 or 1"));
     CHECK_SIMPLE_VARIABLE("ask-password", set_ask_password, tr("0 or 1"));
-    CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("haven, millihaven, microhaven, nanohaven, picohaven"));
+    CHECK_SIMPLE_VARIABLE("unit", set_unit, tr("sumoshi, millisumoshi, microsumoshi, nanosumoshi, picosumoshi"));
     CHECK_SIMPLE_VARIABLE("min-outputs-count", set_min_output_count, tr("unsigned integer"));
     CHECK_SIMPLE_VARIABLE("min-outputs-value", set_min_output_value, tr("amount"));
     CHECK_SIMPLE_VARIABLE("merge-destinations", set_merge_destinations, tr("0 or 1"));
@@ -2718,7 +2718,7 @@ bool simple_wallet::new_wallet(const boost::program_options::variables_map& vm,
     "To start synchronizing with the daemon, use the \"refresh\" command.\n"
     "Use the \"help\" command to see the list of available commands.\n"
     "Use \"help <command>\" to see a command's documentation.\n"
-    "Always use the \"exit\" command when closing haven-wallet-cli to save \n"
+    "Always use the \"exit\" command when closing sumoclassic-wallet-cli to save \n"
     "your current session's state. Otherwise, you might need to synchronize \n"
     "your wallet again (your wallet keys are NOT at risk in any case).\n")
   ;
@@ -3943,26 +3943,26 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_haven_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_sumoclassic_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_sumoclassic_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_haven_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_sumoclassic_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_sumoclassic_tx";
       }
     }
     else
@@ -4192,26 +4192,26 @@ bool simple_wallet::sweep_main(uint64_t below, const std::vector<std::string> &a
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_haven_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_sumoclassic_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_sumoclassic_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_haven_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_sumoclassic_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_sumoclassic_tx";
       }
     }
     else
@@ -4402,19 +4402,19 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_sumoclassic_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_haven_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_sumoclassic_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_haven_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_sumoclassic_tx";
       }
     }
     else
@@ -4473,10 +4473,10 @@ bool simple_wallet::donate(const std::vector<std::string> &args_)
      return true;
   }
   // Hardcode Haven's donation address (see #1447)
-  const std::string address_str = "hvxyCxnEnBa8Go92GSvhXgZtZMpNpi2itLvhPr8fZzd8BgjrkqPeHaQ3YaTVRUyjSXg3AsKXbe4zTbp1BfN6mzyc92tZVszhgV";
-  std::string amount_str;
-  std::string payment_id_str;
-  // get payment id and pop
+ // const std::string address_str = "hvxyCxnEnBa8Go92GSvhXgZtZMpNpi2itLvhPr8fZzd8BgjrkqPeHaQ3YaTVRUyjSXg3AsKXbe4zTbp1BfN6mzyc92tZVszhgV";
+ // std::string amount_str;
+ // std::string payment_id_str;
+ // get payment id and pop
   crypto::hash payment_id;
   crypto::hash8 payment_id8;
   if (tools::wallet2::parse_long_payment_id (local_args.back(), payment_id ) ||
@@ -4493,7 +4493,7 @@ bool simple_wallet::donate(const std::vector<std::string> &args_)
   local_args.push_back(amount_str);
   if (!payment_id_str.empty())
     local_args.push_back(payment_id_str);
-  message_writer() << tr("Donating ") << amount_str << " to Haven Protocol (hvxyCxnEnBa8Go92GSvhXgZtZMpNpi2itLvhPr8fZzd8BgjrkqPeHaQ3YaTVRUyjSXg3AsKXbe4zTbp1BfN6mzyc92tZVszhgV).";
+  message_writer() << tr("Donating ") << amount_str << " to SumoClassic Network (hvxyCxnEnBa8Go92GSvhXgZtZMpNpi2itLvhPr8fZzd8BgjrkqPeHaQ3YaTVRUyjSXg3AsKXbe4zTbp1BfN6mzyc92tZVszhgV).";
   transfer_new(local_args);
   return true;
 }
@@ -4657,7 +4657,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
   std::vector<tools::wallet2::pending_tx> ptx;
   try
   {
-    bool r = m_wallet->sign_tx("unsigned_haven_tx", "signed_haven_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
+    bool r = m_wallet->sign_tx("unsigned_sumoclassic_tx", "signed_sumoclassic_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
     if (!r)
     {
       fail_msg_writer() << tr("Failed to sign transaction");
@@ -4677,7 +4677,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
       txids_as_text += (", ");
     txids_as_text += epee::string_tools::pod_to_hex(get_transaction_hash(t.tx));
   }
-  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_haven_tx" << ", txid " << txids_as_text;
+  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_sumoclassic_tx" << ", txid " << txids_as_text;
   if (export_raw)
   {
     std::string rawfiles_as_text;
@@ -4685,7 +4685,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
     {
       if (i > 0)
         rawfiles_as_text += ", ";
-      rawfiles_as_text += "signed_haven_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
+      rawfiles_as_text += "signed_sumoclassic_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
     }
     success_msg_writer(true) << tr("Transaction raw hex data exported to ") << rawfiles_as_text;
   }
@@ -4700,7 +4700,7 @@ bool simple_wallet::submit_transfer(const std::vector<std::string> &args_)
   try
   {
     std::vector<tools::wallet2::pending_tx> ptx_vector;
-    bool r = m_wallet->load_tx("signed_haven_tx", ptx_vector, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); });
+    bool r = m_wallet->load_tx("signed_sumoclassic_tx", ptx_vector, [&](const tools::wallet2::signed_tx_set &tx){ return accept_loaded_tx(tx); });
     if (!r)
     {
       fail_msg_writer() << tr("Failed to load transaction from file");
