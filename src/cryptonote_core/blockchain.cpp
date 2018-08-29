@@ -75,6 +75,8 @@ using namespace crypto;
 
 using namespace cryptonote;
 using epee::string_tools::pod_to_hex;
+extern "C" void slow_hash_allocate_state();
+extern "C" void slow_hash_free_state();
 
 
 DISABLE_VS_WARNINGS(4267)
@@ -82,7 +84,29 @@ DISABLE_VS_WARNINGS(4267)
 #define MERROR_VER(x) MCERROR("verify", x)
 
 // used to overestimate the block reward when estimating a per kB to use
-#define BLOCK_REWARD_OVERESTIMATE (10 * 1000000000000)
+#define BLOCK_REWARD_OVERESTIMATE   ((uint64_t)(16000000000))
+#define MAINNET_HARDFORK_V1_HEIGHT	((uint64_t)(1))
+#define MAINNET_HARDFORK_V2_HEIGHT	((uint64_t)(21300))
+#define MAINNET_HARDFORK_V3_HEIGHT  ((uint64_t)(116520))		
+#define MAINNET_HARDFORK_V6_HEIGHT  ((uint64_t)(170000))		
+#define MAINNET_HARDFORK_V7_HEIGHT  ((uint64_t)(170000))		
+
+#define TESTNET_HARDFORK_V1_HEIGHT	((uint64_t)(1))
+#define TESTNET_HARDFORK_V2_HEIGHT	((uint64_t)(21300))
+#define TESTNET_HARDFORK_V3_HEIGHT	((uint64_t)(116520))
+// Skip V4 For now
+// #define TESTNET_HARDFORK_V4_HEIGHT	((uint64_t)(137500))
+#define TESTNET_HARDFORK_V5_HEIGHT	((uint64_t)(165000))
+#define TESTNET_HARDFORK_V6_HEIGHT	((uint64_t)(170000))
+	
+#define STAGENET_HARDFORK_V1_HEIGHT	((uint64_t)(1))
+#define STAGENET_HARDFORK_V2_HEIGHT	((uint64_t)(21300))
+#define STAGENET_HARDFORK_V3_HEIGHT	((uint64_t)(116520))
+#define STAGENET_HARDFORK_V4_HEIGHT	((uint64_t)(137500))
+#define STAGENET_HARDFORK_V5_HEIGHT	((uint64_t)(165000))
+#define STAGENET_HARDFORK_V6_HEIGHT	((uint64_t)(170000))
+
+#define FIND_BLOCKCHAIN_SUPPLEMENT_MAX_SIZE (100*1024*1024) // 100 MB
 
 static const struct {
   uint8_t version;
@@ -91,10 +115,15 @@ static const struct {
   time_t time;
 } mainnet_hard_forks[] = {
   // version 1 from the start of the blockchain
-  { 1, 1, 0, 1517398427 },
-  { 2, 38500, 0, 1522818000 },  // 4th April 2018
-  { 3, 89200, 0, 1528942500 }   // 14th June 2018
+  { 1, MAINNET_HARDFORK_V1_HEIGHT, 0, 1482806500 },
+  { 2, MAINNET_HARDFORK_V2_HEIGHT, 0, 1497657600 },  
+  { 3, MAINNET_HARDFORK_V3_HEIGHT, 0, 1522800000 },
+  { 4, 137500, 0, 1528045200 },
+  { 5, 165000, 0, 1529643600 },
+  { 7, MAINNET_HARDFORK_V7_HEIGHT, 0, 1530502485 }
+		  
 };
+static const uint64_t mainnet_hard_fork_version_1_till = MAINNET_HARDFORK_V2_HEIGHT-1;
 
 static const struct {
   uint8_t version;
@@ -103,15 +132,33 @@ static const struct {
   time_t time;
 } testnet_hard_forks[] = {
   // version 1 from the start of the blockchain
-  { 1, 1, 0, 1517398420 },
-  { 2, 2510, 0, 1522713600 },
-  { 3, 2600, 0, 1528489596 }
+  { 1, TESTNET_HARDFORK_V1_HEIGHT, 0, 1482806500 },
+  { 2, TESTNET_HARDFORK_V2_HEIGHT, 0, 1497181713 },
+  { 3, TESTNET_HARDFORK_V3_HEIGHT, 0, 1522540800 },
+ // { 4, TESTNET_HARDFORK_V4_HEIGHT, 0, 1527699600 },
+  { 5, TESTNET_HARDFORK_V5_HEIGHT, 0, 1529308166 }
+
 };
+
+static const uint64_t testnet_hard_fork_version_1_till = TESTNET_HARDFORK_V2_HEIGHT-1;
+
+static const struct {
+  uint8_t version;
+  uint64_t height;
+  uint8_t threshold;
+  time_t time;
+} stagenet_hard_forks[] = {
+  // version 1 from the start of the blockchain
+  { 1, STAGENET_HARDFORK_V1_HEIGHT, 0, 1509360534 },
+  
+}
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
-  m_db(), m_tx_pool(tx_pool), m_hardfork(NULL), m_timestamps_and_difficulties_height(0), m_current_block_cumul_sz_limit(0),
-  m_enforce_dns_checkpoints(false), m_max_prepare_blocks_threads(4), m_db_blocks_per_sync(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_fast_sync(true), m_show_time_stats(false), m_sync_counter(0), m_cancel(false)
+  m_db(), m_tx_pool(tx_pool), m_hardfork(NULL), m_timestamps_and_difficulties_height(0), m_current_block_cumul_sz_limit(0), m_current_block_cumul_sz_median(0),
+  m_enforce_dns_checkpoints(false), m_max_prepare_blocks_threads(4), m_db_blocks_per_sync(1), m_db_sync_mode(db_async), m_db_default_sync(false), m_fast_sync(true), m_show_time_stats(false), m_sync_counter(0), m_cancel(false),
+  m_difficulty_for_next_block_top_hash(crypto::null_hash),
+  m_difficulty_for_next_block(1)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 }
@@ -174,12 +221,12 @@ bool Blockchain::scan_outputkeys_for_indexes(size_t tx_version, const txin_to_ke
   {
     try
     {
-      m_db->get_output_key(tx_in_to_key.amount, absolute_offsets, outputs, true);
-      if (absolute_offsets.size() != outputs.size())
-      {
-        MERROR_VER("Output does not exist! amount = " << tx_in_to_key.amount);
-        return false;
-      }
+	m_db->get_output_key(tx_in_to_key.amount, absolute_offsets, outputs, true);
+ if (absolute_offsets.size() != outputs.size())
+	 {
+	 MERROR_VER("Output does not exist! amount = " << tx_in_to_key.amount);
+      return false;
+	      }
     }
     catch (...)
     {
@@ -282,13 +329,13 @@ uint64_t Blockchain::get_current_blockchain_height() const
 //------------------------------------------------------------------
 //FIXME: possibly move this into the constructor, to avoid accidentally
 //       dereferencing a null BlockchainDB pointer
-bool Blockchain::init(BlockchainDB* db, const bool testnet, bool offline, const cryptonote::test_options *test_options)
+bool Blockchain::init(BlockchainDB* db, const network_type nettype, bool offline, const cryptonote::test_options *test_options)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   CRITICAL_REGION_LOCAL(m_tx_pool);
   CRITICAL_REGION_LOCAL1(m_blockchain_lock);
 
-  bool fakechain = test_options != NULL;
+
 
   if (db == nullptr)
   {
@@ -304,26 +351,27 @@ bool Blockchain::init(BlockchainDB* db, const bool testnet, bool offline, const 
 
   m_db = db;
 
-  m_testnet = testnet;
+  m_nettype = test_options != NULL ? FAKECHAIN : nettype;
   m_offline = offline;
   if (m_hardfork == nullptr)
   {
-    if (fakechain)
+    if (m_nettype == FAKECHAIN || m_nettype == STAGENET)
       m_hardfork = new HardFork(*db, 1, 0);
-    else if (m_testnet)
-      m_hardfork = new HardFork(*db, 1, 0);
+    else if (m_nettype == TESTNET)
+      m_hardfork = new HardFork(*db, 1, testnet_hard_fork_version_1_till);
     else
-      m_hardfork = new HardFork(*db, 1, 0);
+      m_hardfork = new HardFork(*db, 1, mainnet_hard_fork_version_1_till);
+ 
   }
-  if (fakechain)
-  {
-    for (size_t n = 0; test_options->hard_forks[n].first; ++n)
-      m_hardfork->add_fork(test_options->hard_forks[n].first, test_options->hard_forks[n].second, 0, n + 1);
-  }
-  else if (m_testnet)
+if (m_nettype == TESTNET)
   {
     for (size_t n = 0; n < sizeof(testnet_hard_forks) / sizeof(testnet_hard_forks[0]); ++n)
       m_hardfork->add_fork(testnet_hard_forks[n].version, testnet_hard_forks[n].height, testnet_hard_forks[n].threshold, testnet_hard_forks[n].time);
+ }
+ else if (m_nettype == STAGENET)
+  {
+    for (size_t n = 0; n < sizeof(stagenet_hard_forks) / sizeof(stagenet_hard_forks[0]); ++n)
+m_hardfork->add_fork(stagenet_hard_forks[n].version, stagenet_hard_forks[n].height, stagenet_hard_forks[n].threshold, stagenet_hard_forks[n].time);
   }
   else
   {
@@ -343,13 +391,17 @@ bool Blockchain::init(BlockchainDB* db, const bool testnet, bool offline, const 
     MINFO("Blockchain not loaded, generating genesis block.");
     block bl = boost::value_initialized<block>();
     block_verification_context bvc = boost::value_initialized<block_verification_context>();
-    if (m_testnet)
+    if (m_nettype == TESTNET)
     {
-      generate_genesis_block(bl, config::testnet::GENESIS_TX, config::testnet::GENESIS_NONCE, m_testnet);
+generate_genesis_block(bl, config::testnet::GENESIS_TX, config::testnet::GENESIS_NONCE);
+}
+ else if (m_nettype == STAGENET)
+  {
+generate_genesis_block(bl, config::stagenet::GENESIS_TX, config::stagenet::GENESIS_NONCE);
     }
     else
     {
-      generate_genesis_block(bl, config::GENESIS_TX, config::GENESIS_NONCE, m_testnet);
+      generate_genesis_block(bl, config::GENESIS_TX, config::GENESIS_NONCE);
     }
     add_new_block(bl, bvc);
     CHECK_AND_ASSERT_MES(!bvc.m_verifivation_failed, false, "Failed to add genesis block to blockchain");
@@ -360,7 +412,7 @@ bool Blockchain::init(BlockchainDB* db, const bool testnet, bool offline, const 
   {
   }
 
-  if (!fakechain)
+  if (m_nettype != FAKECHAIN)
   {
     // ensure we fixup anything we found and fix in the future
     m_db->set_batch_transactions(true);
@@ -388,16 +440,64 @@ bool Blockchain::init(BlockchainDB* db, const bool testnet, bool offline, const 
 
   MINFO("Blockchain initialized. last block: " << m_db->height() - 1 << ", " << epee::misc_utils::get_time_interval_string(timestamp_diff) << " time ago, current difficulty: " << get_difficulty_for_next_block());
   m_db->block_txn_stop();
+  
+  uint64_t num_popped_blocks = 0;
+  while (true)
+  {
+    const uint64_t top_height = m_db->height() - 1;
+    const crypto::hash top_id = m_db->top_block_hash();
+    const block top_block = m_db->get_top_block();
+    const uint8_t ideal_hf_version = get_ideal_hard_fork_version(top_height);
+    if (ideal_hf_version <= 1 || ideal_hf_version == top_block.major_version)
+    {
+      if (num_popped_blocks > 0)
+        MGINFO("Initial popping done, top block: " << top_id << ", top height: " << top_height << ", block version: " << (uint64_t)top_block.major_version);
+      break;
+    }
+    else
+    {
+      if (num_popped_blocks == 0)
+        MGINFO("Current top block " << top_id << " at height " << top_height << " has version " << (uint64_t)top_block.major_version << " which disagrees with the ideal version " << (uint64_t)ideal_hf_version);
+      if (num_popped_blocks % 100 == 0)
+        MGINFO("Popping blocks... " << top_height);
+      ++num_popped_blocks;
+      block popped_block;
+      std::vector<transaction> popped_txs;
+      try
+      {
+        m_db->pop_block(popped_block, popped_txs);
+      }
+      // anything that could cause this to throw is likely catastrophic,
+      // so we re-throw
+      catch (const std::exception& e)
+      {
+        MERROR("Error popping block from blockchain: " << e.what());
+        throw;
+      }
+      catch (...)
+      {
+        MERROR("Error popping block from blockchain, throwing!");
+        throw;
+      }
+    }
+  }
+  if (num_popped_blocks > 0)
+  {
+    m_timestamps_and_difficulties_height = 0;
+    m_hardfork->reorganize_from_chain_height(get_current_blockchain_height());
+    m_tx_pool.on_blockchain_dec(m_db->height()-1, get_tail_id());
+  }
+
 
   update_next_cumulative_size_limit();
   return true;
 }
 //------------------------------------------------------------------
-bool Blockchain::init(BlockchainDB* db, HardFork*& hf, const bool testnet, bool offline)
+bool Blockchain::init(BlockchainDB* db, HardFork*& hf, const network_type nettype, bool offline)
 {
   if (hf != nullptr)
     m_hardfork = hf;
-  bool res = init(db, testnet, offline, NULL);
+  bool res = init(db, nettype, offline, NULL);
   if (hf == nullptr)
     hf = m_hardfork;
   return res;
@@ -532,6 +632,12 @@ block Blockchain::pop_block_from_blockchain()
       }
     }
   }
+  
+m_blocks_longhash_table.clear();
+m_scan_table.clear();
+m_blocks_txs_check.clear();
+m_check_txin_table.clear();
+
   update_next_cumulative_size_limit();
   m_tx_pool.on_blockchain_dec(m_db->height()-1, get_tail_id());
 
@@ -692,45 +798,56 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
   return false;
 }
 //------------------------------------------------------------------
-//FIXME: this function does not seem to be called from anywhere, but
-// if it ever is, should probably change std::list for std::vector
-void Blockchain::get_all_known_block_ids(std::list<crypto::hash> &main, std::list<crypto::hash> &alt, std::list<crypto::hash> &invalid) const
-{
-  LOG_PRINT_L3("Blockchain::" << __func__);
-  CRITICAL_REGION_LOCAL(m_blockchain_lock);
 
-  for (auto& a : m_db->get_hashes_range(0, m_db->height() - 1))
-  {
-    main.push_back(a);
-  }
-
-  for (const blocks_ext_by_hash::value_type &v: m_alternative_chains)
-    alt.push_back(v.first);
-
-  for (const blocks_ext_by_hash::value_type &v: m_invalid_blocks)
-    invalid.push_back(v.first);
-}
-//------------------------------------------------------------------
 // This function aggregates the cumulative difficulties and timestamps of the
-// last difficulty_blocks_count blocks and passes them to next_difficulty,
+// last DIFFICULTY_BLOCKS_COUNT blocks and passes them to next_difficulty,
 // returning the result of that call.  Ignores the genesis block, and can use
 // less blocks than desired if there aren't enough.
 difficulty_type Blockchain::get_difficulty_for_next_block()
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
-  CRITICAL_REGION_LOCAL(m_blockchain_lock);
+CRITICAL_REGION_LOCAL(m_difficulty_lock);
+// we can call this without the blockchain lock, it might just give us
+// requires the blockchain lock will have acquired it in the first place,
+// and it will be unlocked only when called from the getinfo RPC
+crypto::hash top_hash = get_tail_id();
+if (top_hash == m_difficulty_for_next_block_top_hash)
+return m_difficulty_for_next_block;
+
+CRITICAL_REGION_LOCAL1(m_blockchain_lock);
+
   std::vector<uint64_t> timestamps;
   std::vector<difficulty_type> difficulties;
-  auto height = m_db->height();
-
+  uint64_t height = m_db->height();
+  uint64_t versionHeight = height;
   uint8_t version = get_current_hard_fork_version();
   size_t difficulty_blocks_count;
-  if (version == 1) {
+  uint8_t hf_version = get_current_hard_fork_version();
+if ((uint8_t)hf_version == 1) {
     difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT;
   } else {
     difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V2;
   }
-  // ND: Speedup
+
+ else if ((uint64_t)versionHeight < MAINNET_HARDFORK_V7_HEIGHT || (uint8_t)hf_version <= 5) {
+   difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V3;
+  }
+ else {
+   difficulty_blocks_count = DIFFICULTY_BLOCKS_COUNT_V4;
+  }
+	  
+ size_t target = (uint64_t)versionHeight >= MAINNET_HARDFORK_V7_HEIGHT ? DIFFICULTY_TARGET_V2 : DIFFICULTY_TARGET_V1;
+// Reset network hashrate to 2.0 MHz when hardfork v3 comes
+  if ((uint64_t)height >= MAINNET_HARDFORK_V3_HEIGHT && (uint64_t)height <= MAINNET_HARDFORK_V3_HEIGHT + (uint64_t)difficulty_blocks_count){
+   return (difficulty_type) 480000000;
+  }
+// Reset network hashrate to 1.0 MHz until hardfork v6 comes
+  if ((uint64_t)height >= MAINNET_HARDFORK_V7_HEIGHT - 1 && (uint64_t)height <= MAINNET_HARDFORK_V7_HEIGHT + (uint64_t)difficulty_blocks_count)
+{
+return (difficulty_type) 240000000;
+	  }
+	
+
   // 1. Keep a list of the last 735 (or less) blocks that is used to compute difficulty,
   //    then when the next block difficulty is queried, push the latest height data and
   //    pop the oldest one from the list. This only requires 1x read per height instead
